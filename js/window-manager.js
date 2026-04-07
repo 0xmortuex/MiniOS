@@ -497,7 +497,7 @@ const WindowManager = (() => {
     }
     if (e.ctrlKey && e.shiftKey && e.key === 'Escape') {
       e.preventDefault();
-      if (typeof Apps !== 'undefined') Apps.openTaskManager();
+      if (typeof Apps !== 'undefined') Apps.open('task-manager');
     }
   });
 

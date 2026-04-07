@@ -1,0 +1,151 @@
+/* ── Login / Lock Screen ── */
+
+#login-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif);
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+#login-screen.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Blurred wallpaper background + dark overlay */
+#login-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--wallpaper) center / cover no-repeat;
+  filter: blur(24px) brightness(0.5);
+  transform: scale(1.1); /* prevent blur edge bleed */
+  z-index: -2;
+}
+
+#login-screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: -1;
+}
+
+/* ── Clock ── */
+.login-clock {
+  text-align: center;
+  margin-bottom: 32px;
+  user-select: none;
+}
+
+.login-clock-time {
+  font-size: 80px;
+  font-weight: 600;
+  color: var(--text, #cdd6f4);
+  line-height: 1;
+  letter-spacing: 2px;
+}
+
+.login-clock-date {
+  font-size: 16px;
+  color: var(--text-muted, #6c7086);
+  margin-top: 4px;
+}
+
+/* ── Avatar ── */
+.login-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.login-avatar svg {
+  width: 64px;
+  height: 64px;
+}
+
+/* ── Username ── */
+.login-username {
+  font-size: 18px;
+  color: var(--text, #cdd6f4);
+  margin-bottom: 20px;
+  user-select: none;
+}
+
+/* ── Password row ── */
+.login-password-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.login-password-input {
+  width: 240px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text, #cdd6f4);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: background 0.2s;
+}
+
+.login-password-input::placeholder {
+  color: var(--text-muted, #6c7086);
+}
+
+.login-password-input:focus {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.login-submit-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: var(--accent, #89b4fa);
+  color: #1e1e2e;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+}
+
+.login-submit-btn:hover {
+  opacity: 0.85;
+}
+
+.login-submit-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ── Shake animation ── */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-12px); }
+  40%      { transform: translateX(10px); }
+  60%      { transform: translateX(-8px); }
+  80%      { transform: translateX(6px); }
+}
+
+.shake {
+  animation: shake 0.5s ease;
+}

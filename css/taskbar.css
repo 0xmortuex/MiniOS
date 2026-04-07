@@ -39,6 +39,27 @@
   background: rgba(137, 180, 250, 0.15);
 }
 
+/* Desktop Switcher Button */
+#desktop-switcher-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+#desktop-switcher-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+}
+
 /* Taskbar Windows */
 #taskbar-windows {
   flex: 1;

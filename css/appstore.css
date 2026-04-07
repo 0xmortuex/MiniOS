@@ -1,0 +1,205 @@
+/* App Store Styles */
+.appstore {
+  height: 100%;
+  overflow-y: auto;
+  padding: 16px;
+  background: var(--surface, #1e1e2e);
+  font-family: var(--font, sans-serif);
+  user-select: none;
+}
+
+.appstore-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  gap: 12px;
+}
+
+.appstore-header h2 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--text, #cdd6f4);
+  white-space: nowrap;
+}
+
+.appstore-search {
+  flex: 1;
+  max-width: 220px;
+  padding: 6px 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  background: rgba(0,0,0,0.25);
+  color: var(--text, #cdd6f4);
+  font-size: 12px;
+  outline: none;
+}
+
+.appstore-search:focus {
+  border-color: var(--accent, #89b4fa);
+}
+
+.appstore-search::placeholder {
+  color: var(--text-muted, #6c7086);
+}
+
+.appstore-categories {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.appstore-cat-btn {
+  padding: 5px 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  background: rgba(255,255,255,0.04);
+  color: var(--text-muted, #6c7086);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.appstore-cat-btn:hover {
+  background: rgba(255,255,255,0.08);
+  color: var(--text, #cdd6f4);
+}
+
+.appstore-cat-btn.active {
+  background: var(--accent, #89b4fa);
+  color: #11111b;
+  border-color: var(--accent, #89b4fa);
+}
+
+.appstore-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.appstore-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.appstore-card:hover {
+  border-color: rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+}
+
+.appstore-card-icon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.appstore-card-icon svg {
+  width: 48px;
+  height: 48px;
+}
+
+.appstore-card-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text, #cdd6f4);
+  margin-bottom: 4px;
+}
+
+.appstore-card-desc {
+  font-size: 12px;
+  color: var(--text-muted, #6c7086);
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+
+.appstore-card-actions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.appstore-install-btn {
+  position: relative;
+  width: 100%;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: var(--accent, #89b4fa);
+  color: #11111b;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  overflow: hidden;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.appstore-install-btn:hover {
+  filter: brightness(1.1);
+}
+
+.appstore-install-btn.installing {
+  pointer-events: none;
+  background: rgba(255,255,255,0.08);
+  color: transparent;
+}
+
+.appstore-install-btn.installing .progress-fill {
+  display: block;
+}
+
+.appstore-install-btn .progress-fill {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: var(--accent, #89b4fa);
+  border-radius: 6px;
+  animation: appstore-progress 1.5s ease-in-out forwards;
+}
+
+@keyframes appstore-progress {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+.appstore-install-btn.installed {
+  background: #a6e3a1;
+  color: #11111b;
+  cursor: default;
+}
+
+.appstore-install-btn.installed:hover {
+  filter: none;
+}
+
+.appstore-uninstall-link {
+  font-size: 10px;
+  color: var(--text-muted, #6c7086);
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  text-decoration: underline;
+  transition: color 0.15s;
+}
+
+.appstore-uninstall-link:hover {
+  color: #f38ba8;
+}

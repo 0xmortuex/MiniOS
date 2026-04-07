@@ -6,6 +6,7 @@ const Taskbar = (() => {
   function init() {
     setupClock();
     setupStartButton();
+    setupDesktopSwitcher();
     setupTray();
     setupPower();
     setupStartMenu();
@@ -38,6 +39,16 @@ const Taskbar = (() => {
     });
   }
 
+  function setupDesktopSwitcher() {
+    const btn = document.getElementById('desktop-switcher-btn');
+    if (btn) {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (typeof VirtualDesktops !== 'undefined') VirtualDesktops.showOverview();
+      });
+    }
+  }
+
   function toggleStartMenu() {
     const menu = document.getElementById('start-menu');
     const btn = document.getElementById('start-button');
@@ -66,9 +77,10 @@ const Taskbar = (() => {
     const searchInput = document.getElementById('start-search-input');
 
     const apps = Apps.getAppList();
-    const pinnedApps = ['file-explorer', 'notepad', 'calculator', 'terminal', 'browser', 'settings', 'music-player', 'image-viewer'];
+    const pinnedApps = ['file-explorer', 'notepad', 'calculator', 'terminal', 'paint', 'browser', 'music-player', 'app-store'];
 
     // Pinned
+    pinned.innerHTML = '';
     pinnedApps.forEach(appId => {
       const app = apps.find(a => a.id === appId);
       if (!app) return;
@@ -98,9 +110,7 @@ const Taskbar = (() => {
     searchInput.addEventListener('input', () => renderAllApps(searchInput.value));
 
     // User
-    const username = localStorage.getItem('minios_username') || 'User';
-    document.getElementById('start-username').textContent = username;
-    document.getElementById('start-user-avatar').textContent = username.charAt(0).toUpperCase();
+    refreshUsername();
 
     // Click outside to close
     document.addEventListener('click', (e) => {
@@ -147,7 +157,6 @@ const Taskbar = (() => {
     });
 
     document.getElementById('tray-volume').addEventListener('click', () => {
-      // Toggle mute visual feedback
       const btn = document.getElementById('tray-volume');
       btn.classList.toggle('muted');
     });
@@ -158,6 +167,12 @@ const Taskbar = (() => {
       e.stopPropagation();
       const menu = document.getElementById('power-menu');
       menu.classList.toggle('hidden');
+    });
+
+    document.getElementById('power-lock').addEventListener('click', () => {
+      closePowerMenu();
+      closeStartMenu();
+      if (typeof Login !== 'undefined') Login.lock();
     });
 
     document.getElementById('power-restart').addEventListener('click', () => {
@@ -197,12 +212,23 @@ const Taskbar = (() => {
     });
     container.appendChild(btn);
     windowButtons[win.id] = btn;
+
+    // Assign to active virtual desktop
+    if (typeof VirtualDesktops !== 'undefined') {
+      VirtualDesktops.assignWindow(win.id);
+    }
+
+    // Only show if on active desktop
+    refreshForDesktop();
   }
 
   function removeWindow(winId) {
     if (windowButtons[winId]) {
       windowButtons[winId].remove();
       delete windowButtons[winId];
+    }
+    if (typeof VirtualDesktops !== 'undefined') {
+      VirtualDesktops.unassignWindow(winId);
     }
   }
 
@@ -222,11 +248,26 @@ const Taskbar = (() => {
   function refreshUsername() {
     const username = localStorage.getItem('minios_username') || 'User';
     document.getElementById('start-username').textContent = username;
-    document.getElementById('start-user-avatar').textContent = username.charAt(0).toUpperCase();
+    const avatarEl = document.getElementById('start-user-avatar');
+    const avatarId = localStorage.getItem('minios_avatar') || 'user';
+    if (typeof Login !== 'undefined' && Login.getAvatarSVG) {
+      avatarEl.innerHTML = `<div style="width:28px;height:28px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;overflow:hidden;">${Login.getAvatarSVG(avatarId).replace('<svg ', '<svg width="20" height="20" ')}</div>`;
+    } else {
+      avatarEl.textContent = username.charAt(0).toUpperCase();
+    }
+  }
+
+  // Show only windows on active desktop in taskbar
+  function refreshForDesktop() {
+    if (typeof VirtualDesktops === 'undefined') return;
+    Object.keys(windowButtons).forEach(winId => {
+      const onActive = VirtualDesktops.isWindowOnActiveDesktop(winId);
+      windowButtons[winId].style.display = onActive ? '' : 'none';
+    });
   }
 
   return {
     init, addWindow, removeWindow, updateWindow, setActive,
-    toggleStartMenu, closeStartMenu, refreshUsername
+    toggleStartMenu, closeStartMenu, refreshUsername, refreshForDesktop
   };
 })();

@@ -5,8 +5,10 @@ const Desktop = (() => {
     { id: 'terminal', name: 'Terminal', appId: 'terminal', col: 0, row: 1 },
     { id: 'notepad', name: 'Notepad', appId: 'notepad', col: 0, row: 2 },
     { id: 'calculator', name: 'Calculator', appId: 'calculator', col: 0, row: 3 },
-    { id: 'settings', name: 'Settings', appId: 'settings', col: 0, row: 4 },
-    { id: 'recycle-bin', name: 'Recycle Bin', appId: 'recycle-bin', col: 0, row: 5 }
+    { id: 'paint', name: 'Paint', appId: 'paint', col: 0, row: 4 },
+    { id: 'music-player', name: 'Music', appId: 'music-player', col: 0, row: 5 },
+    { id: 'settings', name: 'Settings', appId: 'settings', col: 1, row: 0 },
+    { id: 'recycle-bin', name: 'Recycle Bin', appId: 'recycle-bin', col: 1, row: 1 }
   ];
 
   let icons = [];
@@ -18,7 +20,14 @@ const Desktop = (() => {
   const PADDING = 16;
 
   function init() {
-    icons = loadIconPositions() || defaultIcons.map(ic => ({ ...ic }));
+    const saved = loadIconPositions();
+    // If saved icons exist but are missing new default icons, reset
+    if (saved && saved.length < defaultIcons.length) {
+      icons = defaultIcons.map(ic => ({ ...ic }));
+      saveIconPositions();
+    } else {
+      icons = saved || defaultIcons.map(ic => ({ ...ic }));
+    }
     render();
     setupSelection();
     applyWallpaper();
