@@ -1,0 +1,374 @@
+/* Taskbar */
+#taskbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  background: var(--taskbar-bg);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  z-index: 1000;
+  padding: 0 4px;
+  gap: 2px;
+}
+
+/* Start Button */
+#start-button {
+  width: 44px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+#start-button:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+#start-button.active {
+  background: rgba(137, 180, 250, 0.15);
+}
+
+/* Taskbar Windows */
+#taskbar-windows {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  overflow-x: auto;
+  padding: 0 4px;
+  min-width: 0;
+}
+
+#taskbar-windows::-webkit-scrollbar {
+  display: none;
+}
+
+.taskbar-btn {
+  height: 36px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  border-radius: 5px;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s;
+  min-width: 0;
+  max-width: 180px;
+  flex-shrink: 0;
+  position: relative;
+  font-family: var(--font-ui);
+  font-size: 12px;
+}
+
+.taskbar-btn svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.taskbar-btn span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.taskbar-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.taskbar-btn.active {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.taskbar-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+.taskbar-btn:not(.active)::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 3px;
+  background: var(--text-muted);
+  border-radius: 2px;
+}
+
+/* System Tray */
+#system-tray {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+  padding-left: 8px;
+  border-left: 1px solid var(--border-subtle);
+  margin-left: auto;
+}
+
+#system-tray button {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.15s, color 0.15s;
+}
+
+#system-tray button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+}
+
+#tray-clock {
+  font-size: 12px;
+  color: var(--text);
+  padding: 4px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.15s;
+  white-space: nowrap;
+  text-align: center;
+  line-height: 1.3;
+}
+
+#tray-clock:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Start Menu */
+#start-menu {
+  position: fixed;
+  bottom: 52px;
+  left: 8px;
+  width: 350px;
+  max-height: 500px;
+  background: var(--start-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  z-index: 9999;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: startMenuIn 0.2s ease;
+}
+
+#start-menu.hidden {
+  display: none !important;
+}
+
+@keyframes startMenuIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#start-menu-search {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+#start-search-input {
+  width: 100%;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+#start-search-input::placeholder {
+  color: var(--text-muted);
+}
+
+#start-search-input:focus {
+  border-color: var(--accent);
+}
+
+#start-menu-pinned {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+#start-menu-pinned h3,
+#start-menu-all h3 {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+#pinned-apps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.start-app-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 4px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.start-app-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.start-app-item svg {
+  width: 32px;
+  height: 32px;
+}
+
+.start-app-item span {
+  font-size: 11px;
+  color: var(--text);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 72px;
+}
+
+#start-menu-all {
+  padding: 12px;
+  flex: 1;
+  overflow-y: auto;
+  max-height: 200px;
+}
+
+.start-all-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.start-all-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.start-all-item svg {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.start-all-item span {
+  font-size: 13px;
+  color: var(--text);
+}
+
+#start-menu-bottom {
+  padding: 8px 12px;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#start-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#start-user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #000;
+}
+
+#start-username {
+  font-size: 13px;
+  color: var(--text);
+}
+
+#start-power {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+}
+
+#start-power:hover {
+  background: rgba(230, 69, 83, 0.2);
+  color: var(--close-hover);
+}
+
+/* Scrollbar in start menu */
+#start-menu-all::-webkit-scrollbar {
+  width: 4px;
+}
+
+#start-menu-all::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#start-menu-all::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 2px;
+}

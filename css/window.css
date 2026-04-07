@@ -1,0 +1,241 @@
+/* Window */
+.mini-window {
+  position: absolute;
+  background: var(--window-body);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  pointer-events: auto;
+  min-width: 200px;
+  min-height: 150px;
+  transition: box-shadow 0.15s;
+}
+
+.mini-window.focused {
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6);
+}
+
+.mini-window.opening {
+  animation: windowOpen 0.15s ease-out forwards;
+}
+
+.mini-window.closing {
+  animation: windowClose 0.15s ease-in forwards;
+}
+
+.mini-window.minimizing {
+  animation: windowMinimize 0.2s ease-in forwards;
+}
+
+.mini-window.maximized {
+  border-radius: 0;
+  border: none;
+}
+
+.mini-window.dragging {
+  will-change: transform;
+  transition: none !important;
+}
+
+.mini-window.resizing {
+  transition: none !important;
+}
+
+.mini-window.snapping {
+  transition: all 0.2s ease;
+}
+
+@keyframes windowOpen {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes windowClose {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.92); }
+}
+
+@keyframes windowMinimize {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.5) translateY(100px); }
+}
+
+/* Title Bar */
+.window-titlebar {
+  height: 36px;
+  background: var(--window-active);
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  gap: 8px;
+  flex-shrink: 0;
+  cursor: default;
+  -webkit-app-region: drag;
+}
+
+.mini-window:not(.focused) .window-titlebar {
+  background: var(--window-inactive);
+}
+
+.window-titlebar-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.window-titlebar-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.window-title {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.mini-window:not(.focused) .window-title {
+  color: var(--text-muted);
+}
+
+.window-controls {
+  display: flex;
+  gap: 0;
+  flex-shrink: 0;
+  margin-left: auto;
+  -webkit-app-region: no-drag;
+}
+
+.window-btn {
+  width: 36px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.window-btn:hover {
+  color: var(--text);
+}
+
+.window-btn.minimize:hover {
+  background: rgba(249, 226, 175, 0.2);
+  color: var(--min-hover);
+}
+
+.window-btn.maximize:hover {
+  background: rgba(166, 227, 161, 0.2);
+  color: var(--max-hover);
+}
+
+.window-btn.close:hover {
+  background: var(--close-hover);
+  color: #fff;
+}
+
+/* Window Body */
+.window-body {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Resize Handles */
+.resize-handle {
+  position: absolute;
+  z-index: 2;
+}
+
+.resize-n { top: -3px; left: 8px; right: 8px; height: 6px; cursor: n-resize; }
+.resize-s { bottom: -3px; left: 8px; right: 8px; height: 6px; cursor: s-resize; }
+.resize-e { right: -3px; top: 8px; bottom: 8px; width: 6px; cursor: e-resize; }
+.resize-w { left: -3px; top: 8px; bottom: 8px; width: 6px; cursor: w-resize; }
+.resize-nw { top: -3px; left: -3px; width: 12px; height: 12px; cursor: nw-resize; }
+.resize-ne { top: -3px; right: -3px; width: 12px; height: 12px; cursor: ne-resize; }
+.resize-sw { bottom: -3px; left: -3px; width: 12px; height: 12px; cursor: sw-resize; }
+.resize-se { bottom: -3px; right: -3px; width: 12px; height: 12px; cursor: se-resize; }
+
+.mini-window.maximized .resize-handle {
+  display: none;
+}
+
+/* Dialog */
+.mini-dialog-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.mini-dialog {
+  background: var(--window-chrome);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 20px;
+  min-width: 280px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+.mini-dialog h3 {
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.mini-dialog p {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+.mini-dialog-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.mini-dialog-buttons button {
+  padding: 6px 16px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 5px;
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  transition: background 0.15s;
+}
+
+.mini-dialog-buttons button:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.mini-dialog-buttons button.primary {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+.mini-dialog-buttons button.primary:hover {
+  opacity: 0.9;
+}

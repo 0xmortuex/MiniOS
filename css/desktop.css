@@ -1,0 +1,229 @@
+/* Global Reset & Variables */
+:root {
+  --taskbar-bg: rgba(15, 15, 20, 0.85);
+  --window-chrome: #1e1e2e;
+  --window-body: #181825;
+  --window-active: #2a2a3c;
+  --window-inactive: #1a1a28;
+  --accent: #89b4fa;
+  --close-hover: #e64553;
+  --max-hover: #a6e3a1;
+  --min-hover: #f9e2af;
+  --text: #cdd6f4;
+  --text-muted: #6c7086;
+  --selection: rgba(137, 180, 250, 0.3);
+  --start-bg: rgba(20, 20, 30, 0.92);
+  --context-bg: rgba(25, 25, 35, 0.95);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-light: rgba(255, 255, 255, 0.1);
+  --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'Cascadia Code', 'Consolas', 'JetBrains Mono', monospace;
+  --wallpaper: linear-gradient(135deg, #0c0c1d 0%, #1a1040 40%, #0d1933 70%, #0a0a15 100%);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font-ui);
+  color: var(--text);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Desktop */
+#desktop {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+#desktop-wallpaper {
+  position: absolute;
+  inset: 0;
+  background: var(--wallpaper);
+  z-index: 0;
+}
+
+#desktop-icons {
+  position: absolute;
+  inset: 0;
+  bottom: 48px;
+  z-index: 1;
+  padding: 16px;
+}
+
+.desktop-icon {
+  position: absolute;
+  width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.desktop-icon:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.desktop-icon.selected {
+  background: var(--selection);
+  border-color: rgba(137, 180, 250, 0.4);
+}
+
+.desktop-icon svg {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+.desktop-icon .icon-label {
+  font-size: 11px;
+  text-align: center;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  word-break: break-word;
+  line-height: 1.3;
+  max-width: 76px;
+}
+
+/* Selection Rectangle */
+#selection-rect {
+  position: absolute;
+  border: 1px solid var(--accent);
+  background: var(--selection);
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* Snap Preview */
+#snap-preview {
+  position: fixed;
+  background: rgba(137, 180, 250, 0.15);
+  border: 2px solid rgba(137, 180, 250, 0.4);
+  border-radius: 8px;
+  z-index: 99;
+  pointer-events: none;
+  transition: all 0.15s ease;
+}
+
+/* Alt+Tab Overlay */
+#alt-tab-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+#alt-tab-overlay.hidden {
+  display: none !important;
+}
+
+.alt-tab-item {
+  width: 120px;
+  padding: 12px;
+  background: rgba(30, 30, 46, 0.9);
+  border: 2px solid transparent;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.alt-tab-item.active {
+  border-color: var(--accent);
+  background: rgba(42, 42, 60, 0.95);
+}
+
+.alt-tab-item svg {
+  width: 40px;
+  height: 40px;
+}
+
+.alt-tab-item span {
+  font-size: 11px;
+  color: var(--text);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100px;
+}
+
+/* Windows Container */
+#windows-container {
+  position: absolute;
+  inset: 0;
+  bottom: 48px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Notifications Dropdown */
+#notifications-dropdown {
+  position: fixed;
+  bottom: 52px;
+  right: 8px;
+  background: var(--context-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 16px 20px;
+  z-index: 9998;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .responsive-warning {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    z-index: 100000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    gap: 16px;
+  }
+  .responsive-warning p {
+    color: var(--text);
+    font-size: 16px;
+    max-width: 400px;
+  }
+  .responsive-warning button {
+    padding: 8px 24px;
+    background: var(--accent);
+    border: none;
+    border-radius: 6px;
+    color: #000;
+    font-weight: 600;
+    cursor: pointer;
+  }
+}
