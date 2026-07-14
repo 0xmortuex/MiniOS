@@ -19,6 +19,15 @@
   --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   --font-mono: 'Cascadia Code', 'Consolas', 'JetBrains Mono', monospace;
   --wallpaper: linear-gradient(135deg, #0c0c1d 0%, #1a1040 40%, #0d1933 70%, #0a0a15 100%);
+
+  /* Shared motion tokens - keep every open/close/snap/menu animation on the
+     same easing + duration scale so the OS reads as one cohesive system. */
+  --motion-instant: 90ms;
+  --motion-fast: 140ms;
+  --motion-base: 200ms;
+  --motion-slow: 260ms;
+  --motion-ease: cubic-bezier(0.16, 1, 0.3, 1);   /* ease-out-expo, snappy settle */
+  --motion-ease-in: cubic-bezier(0.4, 0, 1, 1);   /* accelerate, for exits */
 }
 
 * {
@@ -74,7 +83,22 @@ html, body {
   border-radius: 6px;
   cursor: pointer;
   border: 1px solid transparent;
-  transition: background 0.15s, border-color 0.15s;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+
+.desktop-icon:active {
+  transform: scale(0.95);
+}
+
+/* Boot-time stagger: icons pop in one after another instead of all at once. */
+.desktop-icon.icon-enter {
+  animation: iconEnter var(--motion-base, 200ms) var(--motion-ease, ease-out) backwards;
+  animation-delay: calc(var(--icon-i, 0) * 35ms);
+}
+
+@keyframes iconEnter {
+  from { opacity: 0; transform: scale(0.7) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 .desktop-icon:hover {
@@ -195,6 +219,38 @@ html, body {
   box-shadow: 0 8px 32px rgba(0,0,0,0.5);
   color: var(--text-muted);
   font-size: 13px;
+}
+
+/* ── Reduced Motion ──
+   Site-wide kill switch: every keyframe animation and non-essential
+   transition introduced by the motion layer collapses to an instant,
+   single-frame change. Defined once here (desktop.css loads on every
+   screen) so it governs boot, login, windows, taskbar, start menu and
+   context menu alike without duplicating the query per file. */
+@media (prefers-reduced-motion: reduce) {
+  #boot-screen,
+  #boot-screen *,
+  #shutdown-screen,
+  #login-screen,
+  #login-screen *,
+  .mini-window,
+  .mini-window *,
+  .desktop-icon,
+  .taskbar-btn,
+  #start-menu,
+  .start-app-item,
+  .start-all-item,
+  .context-menu,
+  .context-submenu,
+  .alt-tab-item,
+  #snap-preview,
+  #desktop-wallpaper {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Responsive */

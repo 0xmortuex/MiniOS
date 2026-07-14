@@ -59,7 +59,7 @@ const BrowserApp = {
       }
       currentUrl = url;
       addressBar.value = url;
-      content.innerHTML = `<iframe src="${url}" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>`;
+      content.innerHTML = `<iframe src="${url}" sandbox="allow-scripts allow-forms allow-popups"></iframe>`;
       win.setTitle('Browser - ' + url);
     }
 

@@ -27,12 +27,16 @@
   border-radius: 6px;
   color: var(--text);
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s, transform 0.1s;
   flex-shrink: 0;
 }
 
 #start-button:hover {
   background: rgba(255, 255, 255, 0.08);
+}
+
+#start-button:active {
+  transform: scale(0.92);
 }
 
 #start-button.active {
@@ -51,7 +55,7 @@
   border-radius: 6px;
   color: var(--text-muted);
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.15s, color 0.15s, transform 0.1s;
   flex-shrink: 0;
 }
 
@@ -86,7 +90,7 @@
   border-radius: 5px;
   color: var(--text);
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s, transform 0.1s;
   min-width: 0;
   max-width: 180px;
   flex-shrink: 0;
@@ -112,8 +116,22 @@
   background: rgba(255, 255, 255, 0.08);
 }
 
+.taskbar-btn:active {
+  transform: scale(0.94);
+}
+
 .taskbar-btn.active {
   background: rgba(255, 255, 255, 0.1);
+}
+
+/* Pop-in when a window is first opened (toggled briefly by Taskbar.addWindow) */
+.taskbar-btn.tb-pop {
+  animation: taskbarBtnPop var(--motion-fast, 140ms) var(--motion-ease, ease-out) backwards;
+}
+
+@keyframes taskbarBtnPop {
+  from { opacity: 0; transform: scale(0.6) translateY(6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 .taskbar-btn.active::after {
@@ -162,12 +180,17 @@
   color: var(--text-muted);
   cursor: pointer;
   border-radius: 4px;
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.15s, color 0.15s, transform 0.1s;
 }
 
 #system-tray button:hover {
   background: rgba(255, 255, 255, 0.08);
   color: var(--text);
+}
+
+#system-tray button:active,
+#desktop-switcher-btn:active {
+  transform: scale(0.9);
 }
 
 #tray-clock {
@@ -202,7 +225,8 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  animation: startMenuIn 0.2s ease;
+  transform-origin: bottom left; /* scales/fades from the start button */
+  animation: startMenuIn var(--motion-base, 0.2s) var(--motion-ease, ease-out);
 }
 
 #start-menu.hidden {
@@ -212,11 +236,11 @@
 @keyframes startMenuIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: scale(0.92) translateY(6px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: scale(1) translateY(0);
   }
 }
 
@@ -275,11 +299,16 @@
   padding: 10px 4px;
   border-radius: 6px;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s, transform 0.1s;
 }
 
 .start-app-item:hover {
   background: rgba(255, 255, 255, 0.08);
+}
+
+.start-app-item:active,
+.start-all-item:active {
+  transform: scale(0.96);
 }
 
 .start-app-item svg {
@@ -311,7 +340,7 @@
   padding: 6px 8px;
   border-radius: 6px;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s, transform 0.1s;
 }
 
 .start-all-item:hover {

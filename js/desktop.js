@@ -48,9 +48,10 @@ const Desktop = (() => {
     const container = document.getElementById('desktop-icons');
     container.innerHTML = '';
 
-    icons.forEach(ic => {
+    icons.forEach((ic, i) => {
       const el = document.createElement('div');
-      el.className = 'desktop-icon';
+      el.className = 'desktop-icon icon-enter';
+      el.style.setProperty('--icon-i', i);
       el.dataset.appId = ic.appId;
       el.dataset.iconId = ic.id;
       el.style.left = (PADDING + ic.col * GRID_W) + 'px';

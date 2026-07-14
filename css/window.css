@@ -11,23 +11,32 @@
   pointer-events: auto;
   min-width: 200px;
   min-height: 150px;
-  transition: box-shadow 0.15s;
+  transition: box-shadow var(--motion-fast, 0.15s), transform var(--motion-fast, 0.15s) var(--motion-ease, ease);
 }
 
 .mini-window.focused {
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55);
+  transform: translateY(-1px);
 }
 
+/* .dragging/.resizing below intentionally re-assert transition:none so the
+   focus "lift" transform above never fights the per-frame drag/resize
+   transform - the hot path stays transition-free per the perf requirement. */
+
 .mini-window.opening {
-  animation: windowOpen 0.15s ease-out forwards;
+  animation: windowOpen var(--motion-base, 0.2s) var(--motion-ease, ease-out) forwards;
 }
 
 .mini-window.closing {
-  animation: windowClose 0.15s ease-in forwards;
+  animation: windowClose var(--motion-fast, 0.15s) var(--motion-ease-in, ease-in) forwards;
 }
 
 .mini-window.minimizing {
-  animation: windowMinimize 0.2s ease-in forwards;
+  animation: windowMinimize var(--motion-base, 0.2s) var(--motion-ease-in, ease-in) forwards;
+}
+
+.mini-window.restoring {
+  animation: windowRestore var(--motion-slow, 0.26s) var(--motion-ease, ease-out) forwards;
 }
 
 .mini-window.maximized {
@@ -45,7 +54,8 @@
 }
 
 .mini-window.snapping {
-  transition: all 0.2s ease;
+  transition: left var(--motion-base, 0.2s) ease, top var(--motion-base, 0.2s) ease,
+              width var(--motion-base, 0.2s) ease, height var(--motion-base, 0.2s) ease;
 }
 
 @keyframes windowOpen {
@@ -58,9 +68,20 @@
   to { opacity: 0; transform: scale(0.92); }
 }
 
+/* Shrinks toward the vector recorded in --min-tx/--min-ty (the window's own
+   taskbar button, computed in WindowManager.minimizeWindow). Translate is
+   applied before scale so the pixel offset lands on the button regardless
+   of how much the window has shrunk. */
 @keyframes windowMinimize {
-  from { opacity: 1; transform: scale(1); }
-  to { opacity: 0; transform: scale(0.5) translateY(100px); }
+  from { opacity: 1; transform: translate(0, 0) scale(1); }
+  to { opacity: 0; transform: translate(var(--min-tx, 0px), var(--min-ty, 0px)) scale(0.4); }
+}
+
+/* Reverse of windowMinimize - grows back out from the taskbar button using
+   the same --min-tx/--min-ty vector. */
+@keyframes windowRestore {
+  from { opacity: 0; transform: translate(var(--min-tx, 0px), var(--min-ty, 0px)) scale(0.4); }
+  to { opacity: 1; transform: translate(0, 0) scale(1); }
 }
 
 /* Title Bar */
@@ -124,13 +145,17 @@
   border: none;
   color: var(--text-muted);
   cursor: pointer;
-  transition: background 0.1s, color 0.1s;
+  transition: background 0.1s, color 0.1s, transform 0.1s;
   border-radius: 4px;
   font-size: 16px;
 }
 
 .window-btn:hover {
   color: var(--text);
+}
+
+.window-btn:active {
+  transform: scale(0.88);
 }
 
 .window-btn.minimize:hover {

@@ -28,6 +28,13 @@ const WindowManager = (() => {
     el.style.left = cx + 'px';
     el.style.top = cy + 'px';
 
+    // Genie-lite open: scale in from whatever point triggered this window
+    // (desktop icon, taskbar button, start menu item, etc.)
+    if (typeof MotionSystem !== 'undefined') {
+      const p = MotionSystem.getLastPointer();
+      el.style.transformOrigin = `${p.x - cx}px ${p.y - cy}px`;
+    }
+
     el.innerHTML = `
       <div class="window-titlebar">
         <div class="window-titlebar-icon">${icon || ''}</div>
@@ -147,6 +154,23 @@ const WindowManager = (() => {
 
   function minimizeWindow(win) {
     win.minimized = true;
+
+    // Minimize toward this window's taskbar button (falls back to sliding
+    // straight down when the button can't be located).
+    if (typeof MotionSystem !== 'undefined') {
+      const rect = win.el.getBoundingClientRect();
+      let tx = 0, ty = window.innerHeight - rect.top;
+      if (typeof Taskbar !== 'undefined' && Taskbar.getButtonRect) {
+        const btnRect = Taskbar.getButtonRect(win.id);
+        if (btnRect) {
+          tx = (btnRect.left + btnRect.width / 2) - (rect.left + rect.width / 2);
+          ty = (btnRect.top + btnRect.height / 2) - (rect.top + rect.height / 2);
+        }
+      }
+      win.el.style.setProperty('--min-tx', tx + 'px');
+      win.el.style.setProperty('--min-ty', ty + 'px');
+    }
+
     win.el.classList.add('minimizing');
     setTimeout(() => {
       win.el.style.display = 'none';
@@ -171,8 +195,10 @@ const WindowManager = (() => {
   function restoreWindow(win) {
     win.minimized = false;
     win.el.style.display = '';
-    win.el.classList.add('opening');
-    setTimeout(() => win.el.classList.remove('opening'), 150);
+    // Reverse-genie back out from the taskbar button using the same
+    // --min-tx/--min-ty vector recorded when it was minimized.
+    win.el.classList.add('restoring');
+    setTimeout(() => win.el.classList.remove('restoring'), 200);
     focusWindow(win.id);
     if (typeof Taskbar !== 'undefined') Taskbar.updateWindow(win);
   }
@@ -224,6 +250,13 @@ const WindowManager = (() => {
   }
 
   function removeWindow(win) {
+    // Genie-lite close: shrink toward whatever point triggered the close
+    // (close button, taskbar context menu, Alt+F4, etc.)
+    if (typeof MotionSystem !== 'undefined') {
+      const p = MotionSystem.getLastPointer();
+      const rect = win.el.getBoundingClientRect();
+      win.el.style.transformOrigin = `${p.x - rect.left}px ${p.y - rect.top}px`;
+    }
     win.el.classList.add('closing');
     setTimeout(() => {
       win.el.remove();
@@ -277,7 +310,9 @@ const WindowManager = (() => {
       startX: e.clientX,
       startY: e.clientY,
       startLeft: parseInt(win.el.style.left),
-      startTop: parseInt(win.el.style.top)
+      startTop: parseInt(win.el.style.top),
+      dx: 0,
+      dy: 0
     };
     win.el.classList.add('dragging');
     document.addEventListener('mousemove', onDrag);
@@ -286,14 +321,16 @@ const WindowManager = (() => {
 
   function onDrag(e) {
     if (!dragState) return;
-    const { win, startX, startY, startLeft, startTop } = dragState;
-    const dx = e.clientX - startX;
-    const dy = e.clientY - startY;
-    const newLeft = startLeft + dx;
-    const newTop = Math.max(0, startTop + dy);
+    const { win, startX, startY, startTop } = dragState;
+    let dx = e.clientX - startX;
+    let dy = e.clientY - startY;
+    if (startTop + dy < 0) dy = -startTop;
+    dragState.dx = dx;
+    dragState.dy = dy;
 
-    win.el.style.left = newLeft + 'px';
-    win.el.style.top = newTop + 'px';
+    // Move via transform only during the drag itself - no layout thrash.
+    // The real left/top are committed once, on drag end.
+    win.el.style.transform = `translate(${dx}px, ${dy}px)`;
 
     // Snap zones
     const sp = snapPreview();
@@ -330,10 +367,16 @@ const WindowManager = (() => {
 
   function stopDrag() {
     if (!dragState) return;
-    const { win, snapZone } = dragState;
+    const { win, snapZone, startLeft, startTop, dx, dy } = dragState;
     const maxY = window.innerHeight - 48;
 
     win.el.classList.remove('dragging');
+
+    // Commit the transform-based offset into real left/top. No transition is
+    // active here, so this is an instant, jump-free swap.
+    win.el.style.transform = '';
+    win.el.style.left = (startLeft + dx) + 'px';
+    win.el.style.top = Math.max(0, startTop + dy) + 'px';
 
     if (snapZone) {
       win.prevBounds = {

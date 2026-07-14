@@ -3,6 +3,32 @@ const FileSystem = (() => {
   const STORAGE_KEY = 'minios_fs';
   let fs = {};
 
+  // Minimal, dependency-free toast so storage failures are visible instead of
+  // silently swallowed - filesystem.js loads first, before any UI chrome.
+  function notify(message) {
+    try {
+      let el = document.getElementById('fs-error-toast');
+      if (!el) {
+        el = document.createElement('div');
+        el.id = 'fs-error-toast';
+        el.style.cssText = 'position:fixed;bottom:64px;left:50%;transform:translateX(-50%);' +
+          'background:rgba(30,30,46,0.96);color:#f38ba8;border:1px solid rgba(243,139,168,0.4);' +
+          'padding:10px 16px;border-radius:8px;font:13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;' +
+          'z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,0.5);max-width:360px;text-align:center;' +
+          'opacity:0;transition:opacity .2s ease;pointer-events:none;';
+        document.body.appendChild(el);
+      }
+      const reduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+      el.style.transition = reduced ? 'none' : 'opacity .2s ease';
+      el.textContent = message;
+      requestAnimationFrame(() => { el.style.opacity = '1'; });
+      clearTimeout(el._hideTimer);
+      el._hideTimer = setTimeout(() => { el.style.opacity = '0'; }, 4500);
+    } catch (e) {
+      // Never let the error reporter itself throw.
+    }
+  }
+
   function load() {
     try {
       const data = localStorage.getItem(STORAGE_KEY);
@@ -13,6 +39,7 @@ const FileSystem = (() => {
       }
     } catch (e) {
       console.warn('Failed to load filesystem, initializing default', e);
+      notify('Your saved files could not be read (corrupted data) - starting with a fresh filesystem.');
       initDefault();
     }
   }
@@ -22,6 +49,7 @@ const FileSystem = (() => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(fs));
     } catch (e) {
       console.warn('Failed to save filesystem - localStorage may be full', e);
+      notify('Storage is full - your last change may not be saved.');
     }
   }
 

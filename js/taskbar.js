@@ -213,6 +213,11 @@ const Taskbar = (() => {
     container.appendChild(btn);
     windowButtons[win.id] = btn;
 
+    // Pop-in feedback for the new taskbar button; class removed once the
+    // animation finishes so it doesn't replay on later re-renders.
+    btn.classList.add('tb-pop');
+    setTimeout(() => btn.classList.remove('tb-pop'), 200);
+
     // Assign to active virtual desktop
     if (typeof VirtualDesktops !== 'undefined') {
       VirtualDesktops.assignWindow(win.id);

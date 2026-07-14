@@ -46,10 +46,17 @@ const ContextMenu = (() => {
 
     // Position: make sure it fits in viewport
     const rect = menu.getBoundingClientRect();
-    if (x + rect.width > window.innerWidth) x = window.innerWidth - rect.width - 4;
-    if (y + rect.height > window.innerHeight) y = window.innerHeight - rect.height - 4;
+    const flippedX = x + rect.width > window.innerWidth;
+    const flippedY = y + rect.height > window.innerHeight;
+    if (flippedX) x = window.innerWidth - rect.width - 4;
+    if (flippedY) y = window.innerHeight - rect.height - 4;
     menu.style.left = Math.max(0, x) + 'px';
     menu.style.top = Math.max(0, y) + 'px';
+
+    // Scale/fade from whichever corner is nearest the click point, so a
+    // menu flipped up/left because it hit a screen edge still reads as
+    // anchored to the cursor rather than growing from the wrong corner.
+    menu.style.transformOrigin = `${flippedX ? 'right' : 'left'} ${flippedY ? 'bottom' : 'top'}`;
 
     currentMenu = menu;
   }
